@@ -25,7 +25,27 @@ public class Application {
     }
 
     private void initializeMenu() {
+        mainMenu = new Menu();
 
+        mainMenu.addCommand("add_income", new AddIncomeCommand(taxService));
+        mainMenu.addCommand("add_benefit", new AddBenefitCommand(taxService));
+        mainMenu.addCommand("calculate", new CalculateTaxesCommand(taxService));
+        mainMenu.addCommand("sort", new SortTaxesCommand(taxService));
+        mainMenu.addCommand("find", new FindTaxesCommand(taxService));
+        mainMenu.addCommand("export", new ExportReportCommand(reportGenerator));
+        mainMenu.addCommand("load", new LoadDataCommand(repository));
+
+        mainMenu.addCommand("hello", new Command() {
+            @Override
+            public void execute(java.util.List<String> parameters) {
+                System.out.println(" Вітаємо у системі розрахунку податків!");
+            }
+
+            @Override
+            public String getDescription() {
+                return "Виводить привітальне повідомлення";
+            }
+        });
     }
 
     public void start() {
