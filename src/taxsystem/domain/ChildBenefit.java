@@ -1,6 +1,7 @@
 package taxsystem.domain;
 
 public class ChildBenefit extends TaxBenefit {
+
     private int childCount;
 
     public ChildBenefit(String benefitId, double amount, String description, int childCount) {
@@ -10,13 +11,13 @@ public class ChildBenefit extends TaxBenefit {
 
     @Override
     public double applyBenefit(double taxAmount) {
-        return taxAmount;
+        double reduced = taxAmount - (amount * childCount);
+        return Math.max(0, reduced);
     }
 
     @Override
     public boolean validateApplicability() {
-        return isApplicable && childCount > 0 && amount > 0;
+        return active && childCount > 0 && amount > 0;
     }
 
-    public int getChildCount() { return childCount; }
 }

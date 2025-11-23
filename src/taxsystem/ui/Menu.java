@@ -22,13 +22,9 @@ public class Menu {
         commands.put(commandName,command);
     }
 
-    public void removeCommand(String commandName) {
-        commands.remove(commandName);
-    }
-
     public void run() {
         isRunning = true;
-        System.out.println("=== Система розрахунку податків ===");
+        System.out.println("Система розрахунку податків");
         System.out.println("Введіть 'help' для перегляду команд або 'exit' для виходу.");
 
         while (isRunning) {
@@ -39,7 +35,7 @@ public class Menu {
 
             if (input.equalsIgnoreCase("exit")) {
                 System.out.println("Вихід із програми...");
-                break; // вихід із while
+                break;
             }
 
             if (input.equalsIgnoreCase("help")) {
@@ -84,8 +80,5 @@ public class Menu {
             }
         }
         return parts;
-    }
-    public boolean isRunning() {
-        return isRunning;
     }
 }

@@ -1,5 +1,7 @@
 package taxsystem.domain;
 
+import taxsystem.service.TaxCalculatorService;
+
 public abstract class IncomeSource {
     protected String sourceId;
     protected double amount;
@@ -13,10 +15,10 @@ public abstract class IncomeSource {
         this.taxAmount = 0;
     }
 
-    public abstract double calculateTax();
+    public abstract double calculateTax(TaxCalculatorService tcs);
 
-    public String getSourceId() { return sourceId; }
     public double getAmount() { return amount; }
     public double getTaxAmount() { return taxAmount; }
     public String getDescription() { return description; }
+
 }

@@ -32,13 +32,18 @@ public class Application {
         mainMenu.addCommand("calculate", new CalculateTaxesCommand(taxService));
         mainMenu.addCommand("sort", new SortTaxesCommand(taxService));
         mainMenu.addCommand("find", new FindTaxesCommand(taxService));
-        mainMenu.addCommand("export", new ExportReportCommand(reportGenerator));
-        mainMenu.addCommand("load", new LoadDataCommand(repository));
+        mainMenu.addCommand("create_person", new CreatePersonCommand(taxService));
+
+        ExportReportCommand export = new ExportReportCommand(reportGenerator, repository);
+        export.setTaxService(taxService);
+        mainMenu.addCommand("export", export);
+
+        mainMenu.addCommand("report_mode", new SetReportModeCommand(reportGenerator));
 
         mainMenu.addCommand("hello", new Command() {
             @Override
             public void execute(java.util.List<String> parameters) {
-                System.out.println(" Вітаємо у системі розрахунку податків!");
+                System.out.println("Вітаємо у системі розрахунку податків!");
             }
 
             @Override

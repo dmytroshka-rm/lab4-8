@@ -3,23 +3,23 @@ package taxsystem.domain;
 public abstract class TaxBenefit {
     protected String benefitId;
     protected double amount;
-    protected boolean isApplicable;
     protected String description;
+    protected boolean active = true;
 
     public TaxBenefit(String benefitId, double amount, String description) {
         this.benefitId = benefitId;
         this.amount = amount;
         this.description = description;
-        this.isApplicable = true;
     }
 
     public abstract double applyBenefit(double taxAmount);
 
     public abstract boolean validateApplicability();
 
-    // Getters
-    public String getBenefitId() { return benefitId; }
+
     public double getAmount() { return amount; }
-    public boolean isApplicable() { return isApplicable; }
     public String getDescription() { return description; }
+    public boolean isActive() { return active; }
+
+
 }

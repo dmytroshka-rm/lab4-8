@@ -1,7 +1,7 @@
 package taxsystem.domain;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Person {
     private String personId;
@@ -20,10 +20,21 @@ public class Person {
         this.taxBenefits = new ArrayList<>();
     }
 
-    public String getPersonId() { return personId; }
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
-    public String getTaxId() { return taxId; }
-    public List<IncomeSource> getIncomeSources() { return incomeSources; }
-    public List<TaxBenefit> getTaxBenefits() { return taxBenefits; }
+    public String getFirstName() {
+        return firstName;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getTaxId() {
+        return taxId;
+    }
+    public List<IncomeSource> getIncomeSources() {
+        return incomeSources;
+    }
+    public List<TaxBenefit> getTaxBenefits() {
+        return taxBenefits;
+    }
+
 }
