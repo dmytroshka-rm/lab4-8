@@ -19,7 +19,7 @@
               smtpPort="465"
               smtpProtocol="smtps"
               smtpUsername="dimakipen2006@gmail.com"
-              smtpPassword="omzyvjpfuzuhyyjt"
+              smtpPassword=""
               bufferSize="1"
               smtpDebug="true"
               ignoreExceptions="false">
