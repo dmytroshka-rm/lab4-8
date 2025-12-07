@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1.} - %m%n%throwable"/>
+        </Console>
+
+        <File name="FileAppender" fileName="logs/app.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1.} - %m%n%throwable"/>
+        </File>
+
+        <!-- SMTP-апендер: надсилає лист при ERROR і вище -->
+        <SMTP name="EmailAppender"
+              to="dimakipen2006@gmail.com"
+              from="dimakipen2006@gmail.com"
+              subject="CRITICAL error in MavenCW app"
+              smtpHost="smtp.gmail.com"
+              smtpPort="465"
+              smtpProtocol="smtps"
+              smtpUsername="dimakipen2006@gmail.com"
+              smtpPassword="omzyvjpfuzuhyyjt"
+              bufferSize="1"
+              smtpDebug="true"
+              ignoreExceptions="false">
+
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n%throwable"/>
+
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </SMTP>
+
+    </Appenders>
+
+    <Loggers>
+        <!-- Логер для всього твого додатку -->
+        <Logger name="com.org.insurance" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="EmailAppender"/>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="EmailAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

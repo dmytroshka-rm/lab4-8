@@ -16,7 +16,6 @@ public class ExportReportCommand implements Command {
         this.repository = repository;
     }
 
-    // лишаємо сеттер – ти вже його використовуєш у Application
     public void setTaxService(TaxCalculatorService taxService) {
         this.taxService = taxService;
     }

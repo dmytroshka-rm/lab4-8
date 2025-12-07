@@ -16,10 +16,19 @@ public abstract class TaxBenefit {
 
     public abstract boolean validateApplicability();
 
+    public double getAmount() {
+        return amount;
+    }
 
-    public double getAmount() { return amount; }
-    public String getDescription() { return description; }
-    public boolean isActive() { return active; }
+    public String getDescription() {
+        return description;
+    }
 
+    public boolean isActive() {
+        return active;
+    }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
