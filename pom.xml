@@ -164,7 +164,6 @@
                         <configuration>
                             <excludes>
                                 <exclude>taxsystem/MainApp.class</exclude>
-                                <exclude>taxsystem/ui/MainController.class</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -177,7 +176,6 @@
                         <configuration>
                             <excludes>
                                 <exclude>taxsystem/MainApp.class</exclude>
-                                <exclude>taxsystem/ui/MainController.class</exclude>
                             </excludes>
                             <rules>
                                 <rule>
