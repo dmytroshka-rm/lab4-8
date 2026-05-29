@@ -1,6 +1,8 @@
 package taxsystem.ui.command;
 
-import taxsystem.service.TaxCalculatorService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import taxsystem.service.PersonService;
 import taxsystem.domain.TaxBenefit;
 import taxsystem.domain.ChildBenefit;
 
@@ -8,14 +10,21 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AddBenefitCommand implements Command {
-    private TaxCalculatorService taxService;
+    private static final Logger log = LogManager.getLogger(AddBenefitCommand.class);
+    private final PersonService personService;
 
-    public AddBenefitCommand(TaxCalculatorService taxService) {
-        this.taxService = taxService;
+    public AddBenefitCommand(PersonService personService) {
+        this.personService = personService;
     }
 
     @Override
     public void execute(List<String> parameters) {
+        if (personService.getCurrentPerson() == null) {
+            log.warn("Команда AddBenefit: особу не задано.");
+            System.out.println("Спочатку створіть особу (команда create_person).");
+            return;
+        }
+
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Додавання податкової пільги");
@@ -23,6 +32,7 @@ public class AddBenefitCommand implements Command {
         String type = scanner.nextLine().trim().toLowerCase();
 
         if (!type.equals("child")) {
+            log.warn("Команда AddBenefit: невідомий тип пільги '{}'", type);
             System.out.println("Невідома пільга: " + type);
             System.out.println("Наразі підтримується тільки: child (пільга на дітей)");
             return;
@@ -65,14 +75,11 @@ public class AddBenefitCommand implements Command {
         String description = scanner.nextLine().trim();
 
         TaxBenefit benefit = new ChildBenefit(benefitId, amount, description, childCount);
-        taxService.addBenefit(benefit);
+        personService.addBenefit(benefit);
+        log.info("Команда AddBenefit: додано дитячу пільгу ID={}, дітей={}", benefitId, childCount);
 
         System.out.println("\nПільгу успішно додано!");
-        System.out.println("Тип: " + type);
-        System.out.println("ID: " + benefitId);
-        System.out.println("Сума на одну дитину: " + amount + " грн");
-        System.out.println("Кількість дітей: " + childCount);
-        System.out.println("Опис: " + description);
+        System.out.printf("Тип: %s | ID: %s | Сума: %.2f грн | Дітей: %d%n", type, benefitId, amount, childCount);
     }
 
     @Override

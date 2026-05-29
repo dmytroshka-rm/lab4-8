@@ -27,11 +27,30 @@ class TaxBenefitTest {
     void testGettersAndLogic() {
         TestBenefit benefit = new TestBenefit("B1", 100, "test");
 
+        assertEquals("B1", benefit.getBenefitId());
         assertEquals(100, benefit.getAmount());
         assertEquals("test", benefit.getDescription());
         assertTrue(benefit.isActive());
 
         assertTrue(benefit.validateApplicability());
         assertEquals(900, benefit.applyBenefit(1000));
+    }
+
+    @Test
+    void testSetters() {
+        TestBenefit benefit = new TestBenefit("B1", 100, "test");
+
+        benefit.setBenefitId("B2");
+        assertEquals("B2", benefit.getBenefitId());
+
+        benefit.setAmount(200);
+        assertEquals(200, benefit.getAmount());
+
+        benefit.setDescription("updated");
+        assertEquals("updated", benefit.getDescription());
+
+        benefit.setActive(false);
+        assertFalse(benefit.isActive());
+        assertFalse(benefit.validateApplicability());
     }
 }

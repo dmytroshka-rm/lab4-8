@@ -1,0 +1,334 @@
+@startuml ClassDiagram
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #FAFAF9
+    BorderColor #78716C
+    FontSize 12
+    HeaderBackgroundColor #F0EFED
+}
+skinparam package {
+    BorderColor #A8A29E
+    BackgroundColor #ffffff
+    FontSize 13
+    FontStyle bold
+}
+skinparam stereotype {
+    CBackgroundColor #E8F0FE
+    CBorderColor #2563EB
+}
+skinparam nodesep 60
+skinparam ranksep 50
+
+title <size:16>Діаграма класів — Податкова система</size>
+
+' ══════════════════════════════════════════════
+'  DOMAIN: IncomeSource hierarchy
+' ══════════════════════════════════════════════
+
+package "taxsystem.domain" {
+
+    abstract class IncomeSource {
+        # sourceId : String
+        # amount : double
+        # taxAmount : double
+        # description : String
+        + {abstract} getIncomeType() : String
+        + getAmount() : double
+        + getTaxAmount() : double
+        + setTaxAmount(double) : void
+    }
+
+    class EmploymentIncome {
+        - employerName : String
+        - isMainJob : boolean
+        + getIncomeType() : String
+    }
+
+    class GiftIncome {
+        - donorName : String
+        - relationship : String
+        + isCloseRelative() : boolean
+        + getIncomeType() : String
+    }
+
+    class MaterialAid {
+        - aidType : String
+        - isTaxable : boolean
+        + getIncomeType() : String
+    }
+
+    class RoyaltyIncome {
+        - workTitle : String
+        - workType : String
+        + getIncomeType() : String
+    }
+
+    class PropertySaleIncome {
+        - propertyType : String
+        - isFirstSalePerYear : boolean
+        + getIncomeType() : String
+    }
+
+    class ForeignTransferIncome {
+        - country : String
+        - currency : String
+        + getIncomeType() : String
+    }
+
+    ' ── TaxBenefit hierarchy ──
+
+    abstract class TaxBenefit {
+        # benefitId : String
+        # amount : double
+        # description : String
+        # active : boolean
+        + {abstract} applyBenefit(double) : double
+        + {abstract} validateApplicability() : boolean
+    }
+
+    class ChildBenefit {
+        - childCount : int
+        + applyBenefit(double) : double
+        + validateApplicability() : boolean
+    }
+
+    class MaterialAidBenefit {
+        - maxNonTaxableAmount : double
+        + applyBenefit(double) : double
+        + validateApplicability() : boolean
+    }
+
+    ' ── Entities ──
+
+    class Person {
+        - personId : String
+        - firstName : String
+        - lastName : String
+        - taxId : String
+        - incomeSources : List<IncomeSource>
+        - taxBenefits : List<TaxBenefit>
+    }
+
+    class User {
+        - username : String
+        - passwordHash : String
+        - email : String
+    }
+}
+
+' ══════════════════════════════════════════════
+'  REPOSITORY
+' ══════════════════════════════════════════════
+
+package "taxsystem.repository" {
+
+    interface DataRepository <<interface>> {
+        + save(Person) : void
+        + findById(String) : Optional<Person>
+        + findAll() : List<Person>
+        + update(Person) : void
+        + delete(String) : void
+        + exportTaxReport(String, String) : void
+    }
+
+    class DatabaseManager {
+        - url : String
+        + getConnection() : Connection
+    }
+
+    class FileDataRepository {
+        - storage : Map<String, Person>
+    }
+
+    class SqliteDataRepository {
+        - dbManager : DatabaseManager
+    }
+}
+
+' ══════════════════════════════════════════════
+'  SERVICE
+' ══════════════════════════════════════════════
+
+package "taxsystem.service" {
+
+    class PersonService {
+        - repository : DataRepository
+        - currentPerson : Person
+        + createPerson(firstName, lastName, taxId) : Person
+        + addIncome(IncomeSource) : void
+        + addBenefit(TaxBenefit) : void
+        + removeIncome(String) : void
+        + removeBenefit(String) : void
+        + findAll() : List<Person>
+        + deletePerson(String) : void
+    }
+
+    class UserService {
+        - dbManager : DatabaseManager
+        + register(username, password, email) : String
+        + login(username, password) : User
+    }
+
+    class TaxCalculatorService {
+        - taxRules : Map<String, Double>
+        - nonTaxableMinimum : double
+        + calculateTaxForIncome(IncomeSource) : double
+        + recalcTaxes(Person) : void
+        + getTotalTaxBeforeBenefits(Person) : double
+        + getTotalTaxAfterBenefits(Person) : double
+        + sortByTax(Person, boolean) : List<IncomeSource>
+        + findByTaxRange(Person, double, double) : List<IncomeSource>
+    }
+
+    class TaxReportGenerator {
+        - reportFormat : String
+        + generateReport(Person) : String
+        + setDetailedMode() : void
+        + setSummaryMode() : void
+    }
+}
+
+' ══════════════════════════════════════════════
+'  UI
+' ══════════════════════════════════════════════
+
+package "taxsystem.ui" {
+
+    class LoginController {
+        - stage : Stage
+        - userService : UserService
+        + show() : void
+    }
+
+    class MainController {
+        - personService : PersonService
+        - taxService : TaxCalculatorService
+        - reportGenerator : TaxReportGenerator
+        - repository : DataRepository
+        - currentUser : User
+        + show() : void
+        + setCurrentUser(User) : void
+    }
+
+    class Menu {
+        - commands : Map<String, Command>
+        + addCommand(String, Command) : void
+        + run() : void
+    }
+
+    class UiStyles <<utility>> {
+        + {static} applyAppTheme(Scene) : void
+        + {static} styleButton(Button, ButtonVariant) : void
+    }
+
+    enum ButtonVariant {
+        PRIMARY
+        SUCCESS
+        DANGER
+        SECONDARY
+        OUTLINE
+    }
+}
+
+' ══════════════════════════════════════════════
+'  COMMAND
+' ══════════════════════════════════════════════
+
+package "taxsystem.ui.command" {
+
+    interface Command <<interface>> {
+        + execute(List<String>) : void
+        + getDescription() : String
+    }
+
+    class CreatePersonCommand
+    class AddIncomeCommand
+    class AddBenefitCommand
+    class CalculateTaxesCommand
+    class SortTaxesCommand
+    class FindTaxesCommand
+    class ExportReportCommand
+    class SetReportModeCommand
+}
+
+' ══════════════════════════════════════════════
+'  ENTRY POINTS
+' ══════════════════════════════════════════════
+
+package "taxsystem" as root {
+    class MainApp <<JavaFX>> {
+        + start(Stage) : void
+    }
+    class Application <<Console>> {
+        + start() : void
+    }
+}
+
+' ══════════════════════════════════════════════
+'  НАСЛІДУВАННЯ
+' ══════════════════════════════════════════════
+
+IncomeSource <|-- EmploymentIncome
+IncomeSource <|-- GiftIncome
+IncomeSource <|-- MaterialAid
+IncomeSource <|-- RoyaltyIncome
+IncomeSource <|-- PropertySaleIncome
+IncomeSource <|-- ForeignTransferIncome
+
+TaxBenefit <|-- ChildBenefit
+TaxBenefit <|-- MaterialAidBenefit
+
+DataRepository <|.. FileDataRepository
+DataRepository <|.. SqliteDataRepository
+
+Command <|.. CreatePersonCommand
+Command <|.. AddIncomeCommand
+Command <|.. AddBenefitCommand
+Command <|.. CalculateTaxesCommand
+Command <|.. SortTaxesCommand
+Command <|.. FindTaxesCommand
+Command <|.. ExportReportCommand
+Command <|.. SetReportModeCommand
+
+UiStyles +-- ButtonVariant
+
+' ══════════════════════════════════════════════
+'  АСОЦІАЦІЇ
+' ══════════════════════════════════════════════
+
+Person "1" o-- "0..*" IncomeSource
+Person "1" o-- "0..*" TaxBenefit
+
+SqliteDataRepository --> DatabaseManager
+
+PersonService --> DataRepository
+UserService --> DatabaseManager
+
+TaxCalculatorService ..> Person
+TaxCalculatorService ..> IncomeSource
+TaxReportGenerator ..> Person
+
+MainController --> PersonService
+MainController --> TaxCalculatorService
+MainController --> TaxReportGenerator
+MainController --> DataRepository
+
+LoginController --> UserService
+LoginController --> DatabaseManager
+LoginController ..> MainController : creates
+
+MainApp ..> LoginController : creates
+MainApp ..> DatabaseManager : creates
+
+Application --> Menu
+Application --> PersonService
+Application --> TaxCalculatorService
+Application --> TaxReportGenerator
+
+Menu "1" o-- "0..*" Command
+
+@enduml

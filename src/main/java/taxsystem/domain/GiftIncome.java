@@ -1,10 +1,13 @@
 package taxsystem.domain;
 
-import taxsystem.service.TaxCalculatorService;
-
 import java.util.Set;
 
 public class GiftIncome extends IncomeSource {
+    private static final Set<String> CLOSE_RELATIVES = Set.of(
+            "близька родина", "подружжя", "батько", "мати",
+            "дитина", "син", "донька", "дочка", "брат", "сестра"
+    );
+
     private String donorName;
     private String relationship;
 
@@ -15,20 +18,17 @@ public class GiftIncome extends IncomeSource {
     }
 
     @Override
-    public double calculateTax(TaxCalculatorService tcs) {
-        boolean isCloseRelative = false;
-        if (relationship != null) {
-            String rel = relationship.trim().toLowerCase();
-            Set<String> close = Set.of("близька родина", "подружжя", "батько", "мати", "дитина", "син", "донька", "дочка", "брат", "сестра");
-            isCloseRelative = close.contains(rel);
-        }
-        if (isCloseRelative) {
-            this.taxAmount = 0.0;
-        } else {
-            double rate = tcs.getTaxRule("ПОДАРУНОК");
-            this.taxAmount = amount * rate;
-        }
-        return taxAmount;
+    public String getIncomeType() {
+        return "ПОДАРУНОК";
     }
 
+    public boolean isCloseRelative() {
+        if (relationship == null) return false;
+        return CLOSE_RELATIVES.contains(relationship.trim().toLowerCase());
+    }
+
+    public String getDonorName() { return donorName; }
+    public void setDonorName(String donorName) { this.donorName = donorName; }
+    public String getRelationship() { return relationship; }
+    public void setRelationship(String relationship) { this.relationship = relationship; }
 }

@@ -10,6 +10,7 @@ class PersonTest {
     void testConstructorAndGetters() {
         Person person = new Person("P1", "Ivan", "Ivanov", "12345");
 
+        assertEquals("P1", person.getPersonId());
         assertEquals("Ivan", person.getFirstName());
         assertEquals("Ivanov", person.getLastName());
         assertEquals("12345", person.getTaxId());
@@ -17,6 +18,23 @@ class PersonTest {
         assertNotNull(person.getTaxBenefits());
         assertTrue(person.getIncomeSources().isEmpty());
         assertTrue(person.getTaxBenefits().isEmpty());
+    }
+
+    @Test
+    void testSetters() {
+        Person person = new Person("P1", "Ivan", "Ivanov", "12345");
+
+        person.setPersonId("P2");
+        assertEquals("P2", person.getPersonId());
+
+        person.setFirstName("Petro");
+        assertEquals("Petro", person.getFirstName());
+
+        person.setLastName("Petrov");
+        assertEquals("Petrov", person.getLastName());
+
+        person.setTaxId("99999");
+        assertEquals("99999", person.getTaxId());
     }
 
     @Test

@@ -1,0 +1,34 @@
+@startuml Architecture
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam arrowThickness 2
+skinparam nodesep 10
+skinparam ranksep 30
+
+<style>
+node {
+    RoundCorner 14
+    HorizontalAlignment center
+}
+</style>
+
+title <size:18>Шарова архітектура застосунку</size>\n<size:12>Податкова система</size>\n
+
+node "<b><size:14>Presentation Layer</size></b>\n<i>Шар представлення</i>\n\nLoginController | MainController | UiStyles\nMenu | Command (8 класів)" as PL #DBEAFE
+
+node "<b><size:14>Service Layer</size></b>\n<i>Шар бізнес-логіки</i>\n\nPersonService | TaxCalculatorService\nTaxReportGenerator | UserService" as SL #FEF3C7
+
+node "<b><size:14>Repository Layer</size></b>\n<i>Шар доступу до даних</i>\n\n<<interface>> DataRepository\nSqliteDataRepository | FileDataRepository\nDatabaseManager" as RL #D1FAE5
+
+node "<b><size:14>Domain Layer</size></b>\n<i>Шар доменних моделей</i>\n\nPerson | User\nIncomeSource (6 підкласів)\nTaxBenefit (2 підкласи)" as DL #FEE2E2
+
+database "SQLite\ntaxsystem.db" as DB #E7E5E4
+
+PL -down-> SL
+SL -down-> RL
+RL -down-> DL
+RL -down-> DB
+
+@enduml

@@ -29,13 +29,26 @@ class ChildBenefitTest {
     @Test
     void testValidateApplicabilityFalseWhenInactive() {
         ChildBenefit benefit = new ChildBenefit("B1", 1000, "child", 2);
-        benefit.active = false;
+        benefit.setActive(false);
         assertFalse(benefit.validateApplicability());
     }
 
     @Test
-    void testValidateApplicabilityFalseWhenInvalidValues() {
-        ChildBenefit benefit = new ChildBenefit("B1", 0, "child", 0);
+    void testValidateApplicabilityFalseWhenZeroChildren() {
+        ChildBenefit benefit = new ChildBenefit("B1", 1000, "child", 0);
         assertFalse(benefit.validateApplicability());
+    }
+
+    @Test
+    void testValidateApplicabilityFalseWhenZeroAmount() {
+        ChildBenefit benefit = new ChildBenefit("B1", 0, "child", 2);
+        assertFalse(benefit.validateApplicability());
+    }
+
+    @Test
+    void testSetChildCount() {
+        ChildBenefit benefit = new ChildBenefit("B1", 1000, "child", 2);
+        benefit.setChildCount(5);
+        assertEquals(5, benefit.getChildCount());
     }
 }

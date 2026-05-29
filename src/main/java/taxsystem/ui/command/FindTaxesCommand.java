@@ -1,5 +1,8 @@
 package taxsystem.ui.command;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import taxsystem.service.PersonService;
 import taxsystem.service.TaxCalculatorService;
 import taxsystem.domain.IncomeSource;
 
@@ -7,16 +10,24 @@ import java.util.List;
 import java.util.Scanner;
 
 public class FindTaxesCommand implements Command {
+    private static final Logger log = LogManager.getLogger(FindTaxesCommand.class);
+    private final PersonService personService;
     private final TaxCalculatorService taxService;
 
-    public FindTaxesCommand(TaxCalculatorService taxService) {
+    public FindTaxesCommand(PersonService personService, TaxCalculatorService taxService) {
+        this.personService = personService;
         this.taxService = taxService;
     }
 
     @Override
     public void execute(List<String> parameters) {
-        Scanner scanner = new Scanner(System.in);
+        if (personService.getCurrentPerson() == null) {
+            log.warn("Команда FindTaxes: особу не задано.");
+            System.out.println("Спочатку створіть особу (команда create_person).");
+            return;
+        }
 
+        Scanner scanner = new Scanner(System.in);
         double minTax;
         double maxTax;
 
@@ -25,6 +36,7 @@ public class FindTaxesCommand implements Command {
                 minTax = Double.parseDouble(parameters.get(0));
                 maxTax = Double.parseDouble(parameters.get(1));
             } catch (NumberFormatException e) {
+                log.warn("Команда FindTaxes: невірний формат параметрів: {}", parameters);
                 System.out.println("Невірний формат чисел. Використовуйте, наприклад: find 1000 5000");
                 return;
             }
@@ -34,32 +46,19 @@ public class FindTaxesCommand implements Command {
             maxTax = askDouble(scanner, "Введіть максимальну суму податку (грн): ");
         }
 
-        if (taxService.getCurrentPerson() == null) {
-            System.out.println("Спочатку створіть особу.");
-            return;
-        }
+        taxService.recalcTaxes(personService.getCurrentPerson());
+        List<IncomeSource> found = taxService.findByTaxRange(personService.getCurrentPerson(), minTax, maxTax);
 
-        taxService.recalcTaxes();
+        System.out.printf("%nРезультати пошуку податків у діапазоні від %.2f до %.2f грн:%n", minTax, maxTax);
 
-        System.out.printf("%n Результати пошуку податків у діапазоні від %.2f до %.2f грн:%n", minTax, maxTax);
-
-        List<IncomeSource> sources = taxService.getCurrentPerson().getIncomeSources();
-
-        boolean found = false;
-        for (IncomeSource s : sources) {
-            double tax = s.getTaxAmount();
-            if (tax >= minTax && tax <= maxTax) {
-                System.out.printf("%-15s | %-30s | податок: %8.2f грн%n",
-                        s.getClass().getSimpleName(),
-                        s.getDescription(),
-                        tax);
-                found = true;
-            }
-        }
-
-        if (!found) {
+        log.info("Команда FindTaxes: знайдено {} доходів у діапазоні [{} - {}]", found.size(), minTax, maxTax);
+        if (found.isEmpty()) {
             System.out.println("Не знайдено жодного доходу в цьому діапазоні.");
         } else {
+            for (IncomeSource s : found) {
+                System.out.printf("%-20s | %-30s | податок: %10.2f грн%n",
+                        s.getClass().getSimpleName(), s.getDescription(), s.getTaxAmount());
+            }
             System.out.println("Пошук завершено.");
         }
     }
@@ -71,7 +70,7 @@ public class FindTaxesCommand implements Command {
             try {
                 value = Double.parseDouble(scanner.nextLine().trim());
                 if (value < 0) {
-                    System.out.println("Сума не може бути від’ємною.");
+                    System.out.println("Сума не може бути від'ємною.");
                     continue;
                 }
                 return value;

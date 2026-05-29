@@ -1,0 +1,123 @@
+@startuml UseCaseDiagram
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam usecase {
+    BackgroundColor #FAFAF9
+    BorderColor #78716C
+}
+skinparam rectangle {
+    BorderColor #A8A29E
+    BackgroundColor #ffffff
+    RoundCorner 10
+    FontStyle bold
+    FontSize 13
+}
+skinparam package {
+    BorderColor #D6D3D1
+    BackgroundColor #FAFAF9
+    FontSize 12
+}
+
+left to right direction
+
+title <size:16>Діаграма варіантів використання</size>\n<size:12>"Податкова система — Розрахунок податків фізичних осіб"</size>
+
+actor "Гість" as Guest
+actor "Користувач" as User
+
+Guest <|-- User
+
+rectangle "Система обліку податків" {
+
+  package "Автентифікація" as P1 {
+    usecase "Вхід у систему" as Login
+    usecase "Реєстрація" as Register
+  }
+
+  package "Управління\nплатниками" as P2 {
+    usecase "Переглянути\nплатників" as ViewP
+    usecase "Додати особу" as AddP
+    usecase "Редагувати особу" as EditP
+    usecase "Видалити особу" as DelP
+    usecase "Обрати поточну\nособу" as SelectP
+  }
+
+  package "Управління\nдоходами" as P3 {
+    usecase "Додати дохід\nвід роботи" as Inc1
+    usecase "Додати подарунок" as Inc2
+    usecase "Додати мат.\nдопомогу" as Inc3
+    usecase "Додати авторську\nвинагороду" as Inc4
+    usecase "Додати продаж\nмайна" as Inc5
+    usecase "Додати переказ\nз-за кордону" as Inc6
+    usecase "Видалити дохід" as DelInc
+  }
+
+  package "Управління\nпільгами" as P4 {
+    usecase "Додати пільгу\nна дітей" as Ben1
+    usecase "Додати пільгу на\nмат. допомогу" as Ben2
+    usecase "Видалити пільгу" as DelBen
+  }
+
+  package "Розрахунок\nподатків" as P5 {
+    usecase "Розрахувати\nподатки" as Calc
+    usecase "Сортувати за\nподатком" as Sort
+    usecase "Знайти за\nдіапазоном" as Find
+    usecase "Валідація даних" as Valid
+  }
+
+  package "Звітність" as P6 {
+    usecase "Обрати режим\nзвіту" as Mode
+    usecase "Згенерувати звіт" as GenRep
+    usecase "Експортувати\nу файл" as Export
+  }
+}
+
+' --- Примусове вертикальне розташування пакетів ---
+P1 -[hidden]down- P2
+P2 -[hidden]down- P3
+P3 -[hidden]down- P4
+P4 -[hidden]down- P5
+P5 -[hidden]down- P6
+
+' === Гість ===
+Guest --> Login
+Guest --> Register
+
+' === Користувач ===
+User --> ViewP
+User --> AddP
+User --> EditP
+User --> DelP
+User --> Inc1
+User --> Inc2
+User --> Inc3
+User --> Inc4
+User --> Inc5
+User --> Inc6
+User --> DelInc
+User --> Ben1
+User --> Ben2
+User --> DelBen
+User --> Calc
+User --> Sort
+User --> Find
+User --> Mode
+User --> GenRep
+User --> Export
+
+' === Залежності ===
+Register ..> Login : <<include>>
+EditP ..> SelectP : <<include>>
+DelP ..> SelectP : <<include>>
+Inc1 ..> SelectP : <<include>>
+DelInc ..> SelectP : <<include>>
+Ben1 ..> SelectP : <<include>>
+DelBen ..> SelectP : <<include>>
+Calc ..> SelectP : <<include>>
+Calc ..> Valid : <<include>>
+GenRep ..> SelectP : <<include>>
+Export ..> GenRep : <<include>>
+
+@enduml

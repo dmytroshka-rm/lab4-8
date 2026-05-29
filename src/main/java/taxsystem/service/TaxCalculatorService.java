@@ -4,26 +4,22 @@ import taxsystem.domain.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaxCalculatorService {
 
     private static final Logger log = LogManager.getLogger(TaxCalculatorService.class);
 
-    private Map<String, Double> taxRules;
-    private int currentYear;
+    private final Map<String, Double> taxRules;
     private double nonTaxableMinimum;
-    private Person currentPerson;
 
     public TaxCalculatorService() {
         log.info("Ініціалізація TaxCalculatorService...");
         this.taxRules = new HashMap<>();
-        this.currentYear = 2025;
         this.nonTaxableMinimum = 1000.0;
-
         initializeTaxRules();
-        this.currentPerson = null;
-
         log.info("TaxCalculatorService успішно створено. Неподатковий мінімум = {}", nonTaxableMinimum);
     }
 
@@ -32,6 +28,10 @@ public class TaxCalculatorService {
         taxRules.put("ОПЛАТА_ПРАЦІ", 0.20);
         taxRules.put("ПОДАРУНОК", 0.15);
         taxRules.put("МАТЕРІАЛЬНА_ДОПОМОГА", 0.18);
+        taxRules.put("АВТОРСЬКА_ВИНАГОРОДА", 0.18);
+        taxRules.put("ПРОДАЖ_МАЙНА", 0.05);
+        taxRules.put("ПРОДАЖ_МАЙНА_ПОВТОРНИЙ", 0.18);
+        taxRules.put("ПЕРЕКАЗ_З_ЗАКОРДОНУ", 0.18);
     }
 
     public double getTaxRule(String incomeType) {
@@ -44,60 +44,49 @@ public class TaxCalculatorService {
         return nonTaxableMinimum;
     }
 
-    public Person getCurrentPerson() {
-        return currentPerson;
+    public double calculateTaxForIncome(IncomeSource income) {
+        double tax = 0;
+
+        if (income instanceof EmploymentIncome) {
+            double base = Math.max(0, income.getAmount() - nonTaxableMinimum);
+            tax = base * getTaxRule(income.getIncomeType());
+        } else if (income instanceof GiftIncome gift) {
+            if (gift.isCloseRelative()) {
+                tax = 0.0;
+            } else {
+                tax = income.getAmount() * getTaxRule(income.getIncomeType());
+            }
+        } else if (income instanceof MaterialAid aid) {
+            if (!aid.isTaxable()) {
+                tax = 0.0;
+            } else {
+                tax = income.getAmount() * getTaxRule(income.getIncomeType());
+            }
+        } else if (income instanceof RoyaltyIncome) {
+            tax = income.getAmount() * getTaxRule(income.getIncomeType());
+        } else if (income instanceof PropertySaleIncome sale) {
+            String ruleKey = sale.isFirstSalePerYear() ? "ПРОДАЖ_МАЙНА" : "ПРОДАЖ_МАЙНА_ПОВТОРНИЙ";
+            tax = income.getAmount() * getTaxRule(ruleKey);
+        } else if (income instanceof ForeignTransferIncome) {
+            tax = income.getAmount() * getTaxRule(income.getIncomeType());
+        }
+
+        income.setTaxAmount(tax);
+        log.debug("Розраховано податок для '{}': {}", income.getDescription(), tax);
+        return tax;
     }
 
-    public void setCurrentPerson(Person p) {
-        if (p == null) {
-            log.warn("setCurrentPerson викликано з null. Поточну особу не змінено.");
-            return;
-        }
-        this.currentPerson = p;
-        log.info("Поточну особу встановлено: {} {}", p.getFirstName(), p.getLastName());
-    }
-
-    public void addIncome(IncomeSource s) {
-        if (currentPerson == null) {
-            log.warn("Спроба додати дохід без створеної особи.");
-            return;
-        }
-        if (s == null) {
-            log.warn("Спроба додати null як дохід.");
+    public void recalcTaxes(Person person) {
+        if (person == null) {
+            log.error("Перерахунок податків неможливий — особу не задано.");
             return;
         }
 
-        currentPerson.getIncomeSources().add(s);
-        log.info("Додано нове джерело доходу: {} сума = {}", s.getDescription(), s.getAmount());
-    }
+        log.info("Початок перерахунку податків для особи {}", person.getTaxId());
 
-    public void addBenefit(TaxBenefit b) {
-        if (currentPerson == null) {
-            log.warn("Спроба додати пільгу без створеної особи.");
-            return;
-        }
-        if (b == null) {
-            log.warn("Спроба додати null пільгу.");
-            return;
-        }
-
-        currentPerson.getTaxBenefits().add(b);
-        log.info("Додано податкову пільгу: {} величина = {}", b.getDescription(), b.getAmount());
-    }
-
-    public void recalcTaxes() {
-        if (currentPerson == null) {
-            log.error("Перерахунок податків неможливий — особу не створено.");
-            System.out.println("Спочатку створіть особу.");
-            return;
-        }
-
-        log.info("Початок перерахунку податків для особи {}", currentPerson.getTaxId());
-
-        for (IncomeSource s : currentPerson.getIncomeSources()) {
+        for (IncomeSource s : person.getIncomeSources()) {
             try {
-                s.calculateTax(this);
-                log.debug("Розраховано податок для '{}': {}", s.getDescription(), s.getTaxAmount());
+                calculateTaxForIncome(s);
             } catch (Exception e) {
                 log.error("Помилка розрахунку податку для '{}'", s.getDescription(), e);
             }
@@ -106,16 +95,15 @@ public class TaxCalculatorService {
         log.info("Перерахунок податків завершено.");
     }
 
-    public double getTotalTaxBeforeBenefits() {
-        if (currentPerson == null) {
-            log.warn("Отримання суми податків до пільг — поточна особа відсутня.");
+    public double getTotalTaxBeforeBenefits(Person person) {
+        if (person == null) {
+            log.warn("Отримання суми податків до пільг — особа відсутня.");
             return 0;
         }
 
-        double total = 0;
-        for (IncomeSource source : currentPerson.getIncomeSources()) {
-            total += source.getTaxAmount();
-        }
+        double total = person.getIncomeSources().stream()
+                .mapToDouble(IncomeSource::getTaxAmount)
+                .sum();
 
         log.info("Сума податків до пільг: {}", total);
         return total;
@@ -136,15 +124,15 @@ public class TaxCalculatorService {
         return Math.max(0, result);
     }
 
-    public double getTotalTaxAfterBenefits() {
-        if (currentPerson == null) {
-            log.warn("Спроба отримати податок після пільг — особа не встановлена.");
+    public double getTotalTaxAfterBenefits(Person person) {
+        if (person == null) {
+            log.warn("Спроба отримати податок після пільг — особа не задана.");
             return 0;
         }
 
         return applyTaxBenefits(
-                getTotalTaxBeforeBenefits(),
-                currentPerson.getTaxBenefits()
+                getTotalTaxBeforeBenefits(person),
+                person.getTaxBenefits()
         );
     }
 
@@ -156,19 +144,38 @@ public class TaxCalculatorService {
 
         for (IncomeSource s : person.getIncomeSources()) {
             if (s.getAmount() < 0) {
-                log.error("Некоректна сума доходу (від’ємна): {}", s.getAmount());
+                log.error("Некоректна сума доходу (від'ємна): {}", s.getAmount());
                 return false;
             }
         }
 
         for (TaxBenefit b : person.getTaxBenefits()) {
             if (b.getAmount() < 0) {
-                log.error("Некоректний розмір пільги (від’ємний): {}", b.getAmount());
+                log.error("Некоректний розмір пільги (від'ємний): {}", b.getAmount());
                 return false;
             }
         }
 
         log.info("Валідація податкових даних успішно пройдена.");
         return true;
+    }
+
+    public List<IncomeSource> sortByTax(Person person, boolean ascending) {
+        if (person == null) return Collections.emptyList();
+
+        Comparator<IncomeSource> cmp = Comparator.comparingDouble(IncomeSource::getTaxAmount);
+        if (!ascending) cmp = cmp.reversed();
+
+        return person.getIncomeSources().stream()
+                .sorted(cmp)
+                .collect(Collectors.toList());
+    }
+
+    public List<IncomeSource> findByTaxRange(Person person, double minTax, double maxTax) {
+        if (person == null) return Collections.emptyList();
+
+        return person.getIncomeSources().stream()
+                .filter(s -> s.getTaxAmount() >= minTax && s.getTaxAmount() <= maxTax)
+                .collect(Collectors.toList());
     }
 }

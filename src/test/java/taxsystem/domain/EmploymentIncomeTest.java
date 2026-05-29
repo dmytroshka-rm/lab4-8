@@ -1,30 +1,49 @@
 package taxsystem.domain;
 
 import org.junit.jupiter.api.Test;
-import taxsystem.service.TaxCalculatorService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class EmploymentIncomeTest {
 
     @Test
-    void testCalculateTaxAboveNonTaxableMinimum() {
-        TaxCalculatorService service = new TaxCalculatorService();
+    void testConstructorAndGetters() {
         EmploymentIncome income = new EmploymentIncome("I1", 5000, "job", "Company", true);
 
-        double tax = income.calculateTax(service);
-
-        double expected = (5000 - service.getNonTaxableMinimum()) * service.getTaxRule("ОПЛАТА_ПРАЦІ");
-        assertEquals(expected, tax);
+        assertEquals("I1", income.getSourceId());
+        assertEquals(5000, income.getAmount());
+        assertEquals("job", income.getDescription());
+        assertEquals("Company", income.getEmployerName());
+        assertTrue(income.isMainJob());
+        assertEquals(0.0, income.getTaxAmount());
     }
 
     @Test
-    void testCalculateTaxBelowNonTaxableMinimum() {
-        TaxCalculatorService service = new TaxCalculatorService();
-        EmploymentIncome income = new EmploymentIncome("I1", 500, "job", "Company", true);
+    void testGetIncomeType() {
+        EmploymentIncome income = new EmploymentIncome("I1", 5000, "job", "Company", true);
+        assertEquals("ОПЛАТА_ПРАЦІ", income.getIncomeType());
+    }
 
-        double tax = income.calculateTax(service);
+    @Test
+    void testSetters() {
+        EmploymentIncome income = new EmploymentIncome("I1", 5000, "job", "Company", true);
 
-        assertEquals(0.0, tax);
+        income.setEmployerName("NewCompany");
+        assertEquals("NewCompany", income.getEmployerName());
+
+        income.setMainJob(false);
+        assertFalse(income.isMainJob());
+
+        income.setAmount(10000);
+        assertEquals(10000, income.getAmount());
+
+        income.setSourceId("I2");
+        assertEquals("I2", income.getSourceId());
+
+        income.setDescription("updated desc");
+        assertEquals("updated desc", income.getDescription());
+
+        income.setTaxAmount(500);
+        assertEquals(500, income.getTaxAmount());
     }
 }

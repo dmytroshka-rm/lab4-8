@@ -10,7 +10,16 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1.} - %m%n%throwable"/>
         </File>
 
-        <!-- SMTP-апендер: надсилає лист при ERROR і вище -->
+        <!--
+          SMTP-апендер: надсилає email при рівні ERROR і вище.
+
+          Щоб активувати реальне надсилання листів (Gmail):
+            1. Увімкніть двофакторну автентифікацію у Google-акаунті.
+            2. Створіть "Пароль застосунку" (Google Account → Security → App passwords).
+            3. Вставте згенерований 16-символьний пароль у поле smtpPassword нижче.
+            4. Якщо пароль не вказано — апендер мовчки ігнорує помилку (ignoreExceptions="true")
+               і програма продовжує роботу без email-сповіщення.
+        -->
         <SMTP name="EmailAppender"
               to="dimakipen2006@gmail.com"
               from="dimakipen2006@gmail.com"
@@ -21,8 +30,8 @@
               smtpUsername="dimakipen2006@gmail.com"
               smtpPassword=""
               bufferSize="1"
-              smtpDebug="true"
-              ignoreExceptions="false">
+              smtpDebug="false"
+              ignoreExceptions="true">
 
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n%throwable"/>
 

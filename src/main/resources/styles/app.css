@@ -1,0 +1,533 @@
+/* ═══════════════════════════════════════════════════════════════
+   Податкова система — сучасна тема (Notion / Linear style)
+   Flat design, neutral palette, single accent color
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ——— Базові стилі ——— */
+
+.root.app-root,
+.root.login-root {
+    -fx-font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+    -fx-font-size: 13.5px;
+    -fx-background-color: #f5f5f4;
+}
+
+/* ——— Бічна панель ——— */
+
+.sidebar-panel {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e7e5e4;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 10, 0, 0, 2);
+}
+
+.section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1917;
+    -fx-padding: 0 0 6 0;
+}
+
+/* ——— Вкладки (Notion-style underline) ——— */
+
+.tab-pane.main-tabs {
+    -fx-tab-min-width: 96;
+}
+
+.tab-pane.main-tabs .tab-header-area {
+    -fx-padding: 0 8 0 8;
+}
+
+.tab-pane.main-tabs .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane.main-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 12 20 10 20;
+    -fx-border-color: transparent transparent transparent transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.tab-pane.main-tabs .tab:hover {
+    -fx-background-color: #fafaf9;
+}
+
+.tab-pane.main-tabs .tab:selected {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #2563eb transparent;
+    -fx-border-width: 0 0 2.5 0;
+}
+
+.tab-pane.main-tabs .tab .tab-label {
+    -fx-text-fill: #78716c;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+.tab-pane.main-tabs .tab:selected .tab-label {
+    -fx-text-fill: #1c1917;
+}
+
+.tab-pane.main-tabs:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-width: 0;
+}
+
+/* Вкладки вікна входу */
+.tab-pane.login-tabs .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane.login-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 10 20;
+    -fx-border-color: transparent transparent transparent transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.tab-pane.login-tabs .tab:selected {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #2563eb transparent;
+    -fx-border-width: 0 0 2.5 0;
+}
+
+.tab-pane.login-tabs .tab .tab-label {
+    -fx-text-fill: #78716c;
+    -fx-font-weight: 600;
+}
+
+.tab-pane.login-tabs .tab:selected .tab-label {
+    -fx-text-fill: #1c1917;
+}
+
+.tab-pane.login-tabs:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-width: 0;
+}
+
+/* ——— Контент вкладки ——— */
+
+.tab-content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0 12 12 12;
+    -fx-border-color: #e7e5e4;
+    -fx-border-radius: 0 12 12 12;
+    -fx-border-width: 1;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.03), 8, 0, 0, 2);
+}
+
+.login-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-padding: 12 8 20 8;
+}
+
+.login-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1917;
+}
+
+/* ——— Таблиці (flat header, clean rows) ——— */
+
+.table-view.data-table {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e7e5e4;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 0;
+}
+
+.table-view.data-table .column-header-background {
+    -fx-background-color: #fafaf9;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view.data-table .column-header {
+    -fx-size: 38px;
+    -fx-border-color: transparent transparent #e7e5e4 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+}
+
+.table-view.data-table .filler {
+    -fx-size: 38px;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.table-view.data-table .column-header .label {
+    -fx-text-fill: #78716c;
+    -fx-font-weight: 600;
+    -fx-font-size: 12px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-view.data-table .table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f5f5f4 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view.data-table .table-row-cell:odd {
+    -fx-background-color: #fafaf9;
+}
+
+.table-view.data-table .table-row-cell:hover {
+    -fx-background-color: #f5f5f4;
+}
+
+.table-view.data-table .table-row-cell:selected {
+    -fx-background-color: #eff6ff;
+    -fx-text-background-color: #1c1917;
+}
+
+.table-view.data-table .table-row-cell:selected:hover {
+    -fx-background-color: #dbeafe;
+}
+
+.table-view.data-table .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 8 12;
+    -fx-text-fill: #292524;
+}
+
+/* Placeholder для порожніх таблиць */
+.table-view.data-table .placeholder .label {
+    -fx-text-fill: #a8a29e;
+    -fx-font-size: 13px;
+}
+
+/* ——— Поля вводу (clean, minimal) ——— */
+
+.text-field, .password-field, .spinner, .combo-box-base {
+    -fx-background-radius: 8;
+    -fx-border-color: #d6d3d1;
+    -fx-border-radius: 8;
+    -fx-background-color: #ffffff;
+    -fx-padding: 9 12;
+    -fx-prompt-text-fill: #a8a29e;
+}
+
+.text-field:hover, .password-field:hover {
+    -fx-border-color: #a8a29e;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #2563eb;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.12), 5, 0, 0, 0);
+}
+
+.text-area {
+    -fx-background-radius: 10;
+    -fx-border-color: #d6d3d1;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-font-family: "Cascadia Mono", "Consolas", "JetBrains Mono", monospace;
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #292524;
+}
+
+.text-area .content {
+    -fx-background-color: #fafaf9;
+    -fx-background-radius: 10;
+}
+
+.text-area:focused {
+    -fx-border-color: #2563eb;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.08), 4, 0, 0, 0);
+}
+
+/* ——— Кнопки (flat, clean) ——— */
+
+.button.btn {
+    -fx-background-radius: 8;
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-effect: none;
+}
+
+/* Primary — accent blue */
+.button.btn-primary {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #2563eb;
+}
+
+.button.btn-primary:hover {
+    -fx-background-color: #1d4ed8;
+    -fx-border-color: #1d4ed8;
+}
+
+.button.btn-primary:pressed {
+    -fx-background-color: #1e40af;
+    -fx-border-color: #1e40af;
+}
+
+/* Success — muted green */
+.button.btn-success {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #16a34a;
+}
+
+.button.btn-success:hover {
+    -fx-background-color: #15803d;
+    -fx-border-color: #15803d;
+}
+
+.button.btn-success:pressed {
+    -fx-background-color: #166534;
+}
+
+/* Danger — soft red */
+.button.btn-danger {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ef4444;
+}
+
+.button.btn-danger:hover {
+    -fx-background-color: #dc2626;
+    -fx-border-color: #dc2626;
+}
+
+.button.btn-danger:pressed {
+    -fx-background-color: #b91c1c;
+}
+
+/* Secondary — neutral surface */
+.button.btn-secondary {
+    -fx-background-color: #78716c;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #78716c;
+}
+
+.button.btn-secondary:hover {
+    -fx-background-color: #57534e;
+    -fx-border-color: #57534e;
+}
+
+.button.btn-secondary:pressed {
+    -fx-background-color: #44403c;
+}
+
+/* Outline — ghost button */
+.button.btn-outline {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #292524;
+    -fx-border-color: #d6d3d1;
+}
+
+.button.btn-outline:hover {
+    -fx-background-color: #f5f5f4;
+    -fx-border-color: #a8a29e;
+}
+
+.button.btn-outline:pressed {
+    -fx-background-color: #e7e5e4;
+}
+
+/* Кнопки на всю ширину в боковій панелі */
+.sidebar-panel .button {
+    -fx-max-width: infinity;
+}
+
+/* ——— Панелі кнопок ——— */
+
+.action-toolbar {
+    -fx-spacing: 8;
+    -fx-padding: 8 0 0 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.action-toolbar-wrap {
+    -fx-spacing: 8;
+    -fx-padding: 12 0 0 0;
+}
+
+/* ——— Група пошуку / режиму звіту ——— */
+
+.control-strip {
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 6 0 10 0;
+}
+
+.control-strip .label {
+    -fx-text-fill: #57534e;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+.radio-button {
+    -fx-text-fill: #44403c;
+    -fx-font-size: 13px;
+}
+
+.radio-button .radio {
+    -fx-border-color: #d6d3d1;
+    -fx-background-color: #ffffff;
+}
+
+.radio-button:selected .radio {
+    -fx-border-color: #2563eb;
+    -fx-background-color: #ffffff;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: #2563eb;
+}
+
+.check-box {
+    -fx-text-fill: #44403c;
+    -fx-font-size: 13px;
+}
+
+.check-box .box {
+    -fx-border-color: #d6d3d1;
+    -fx-border-radius: 4;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 4;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #2563eb;
+    -fx-border-color: #2563eb;
+}
+
+.check-box:selected .box .mark {
+    -fx-background-color: #ffffff;
+}
+
+/* ——— Статус-бар ——— */
+
+.status-bar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e7e5e4 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 10 18;
+    -fx-background-radius: 0 0 10 10;
+}
+
+.status-bar .label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #78716c;
+}
+
+.status-user {
+    -fx-text-fill: #2563eb;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* ——— Форми (логін) ——— */
+
+.form-label {
+    -fx-text-fill: #57534e;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+/* ——— ScrollBar (тонкі, сучасні) ——— */
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #d6d3d1;
+    -fx-background-radius: 10;
+    -fx-background-insets: 2;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #a8a29e;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 8;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 8;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+/* ——— Діалоги ——— */
+
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-padding: 0;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #fafaf9;
+    -fx-padding: 16 20;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1917;
+}
+
+.dialog-pane .content {
+    -fx-padding: 16 20;
+}
+
+.dialog-pane .button-bar {
+    -fx-padding: 12 20;
+    -fx-background-color: #fafaf9;
+}
+
+/* ——— Alert діалоги ——— */
+
+.alert .dialog-pane {
+    -fx-background-color: #ffffff;
+}
+
+/* ——— Tooltip ——— */
+
+.tooltip {
+    -fx-background-color: #292524;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 6;
+    -fx-font-size: 12px;
+    -fx-padding: 6 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 6, 0, 0, 2);
+}
+
+/* ——— Separator ——— */
+
+.separator .line {
+    -fx-border-color: #e7e5e4;
+    -fx-border-width: 0.5 0 0 0;
+}

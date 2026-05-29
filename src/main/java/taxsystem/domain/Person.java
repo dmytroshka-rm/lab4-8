@@ -20,21 +20,21 @@ public class Person {
         this.taxBenefits = new ArrayList<>();
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-    public String getLastName() {
-        return lastName;
-    }
+    public String getPersonId() { return personId; }
+    public void setPersonId(String personId) { this.personId = personId; }
 
-    public String getTaxId() {
-        return taxId;
-    }
-    public List<IncomeSource> getIncomeSources() {
-        return incomeSources;
-    }
-    public List<TaxBenefit> getTaxBenefits() {
-        return taxBenefits;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getTaxId() { return taxId; }
+    public void setTaxId(String taxId) { this.taxId = taxId; }
+
+    public List<IncomeSource> getIncomeSources() { return incomeSources; }
+    public void setIncomeSources(List<IncomeSource> incomeSources) { this.incomeSources = incomeSources; }
+
+    public List<TaxBenefit> getTaxBenefits() { return taxBenefits; }
+    public void setTaxBenefits(List<TaxBenefit> taxBenefits) { this.taxBenefits = taxBenefits; }
 }

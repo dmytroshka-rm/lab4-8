@@ -1,0 +1,74 @@
+@startuml DatabaseSchema
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam linetype ortho
+
+skinparam class {
+    BackgroundColor #FAFAF9
+    BorderColor #78716C
+    HeaderBackgroundColor #2563EB
+    HeaderFontColor #FFFFFF
+    FontSize 12
+}
+
+title <size:16>Схема бази даних (SQLite)</size>\n<size:12>taxsystem.db</size>
+
+!define TABLE(name) entity name << (T,#4A90D9) Table >>
+!define PK(x) <b><color:#2563EB>PK</color></b> x
+!define FK(x) <color:#16A34A>FK</color> x
+!define NN(x) x <color:#78716C>NOT NULL</color>
+
+TABLE(persons) {
+    PK(person_id) : TEXT
+    --
+    NN(first_name) : TEXT
+    NN(last_name) : TEXT
+    NN(tax_id) : TEXT
+}
+
+TABLE(income_sources) {
+    PK(source_id) : TEXT
+    --
+    FK(NN(person_id)) : TEXT
+    NN(income_type) : TEXT
+    NN(amount) : REAL
+    description : TEXT
+    employer_name : TEXT
+    is_main_job : INTEGER
+    donor_name : TEXT
+    relationship : TEXT
+    aid_type : TEXT
+    is_taxable : INTEGER
+    work_title : TEXT
+    work_type : TEXT
+    property_type : TEXT
+    is_first_sale : INTEGER
+    country : TEXT
+    currency : TEXT
+}
+
+TABLE(tax_benefits) {
+    PK(benefit_id) : TEXT
+    --
+    FK(NN(person_id)) : TEXT
+    NN(benefit_type) : TEXT
+    NN(amount) : REAL
+    description : TEXT
+    active : INTEGER = 1
+    child_count : INTEGER
+    max_non_taxable : REAL
+}
+
+TABLE(users) {
+    PK(username) : TEXT
+    --
+    NN(password_hash) : TEXT
+    email : TEXT
+}
+
+persons ||--o{ income_sources
+persons ||--o{ tax_benefits
+
+@enduml

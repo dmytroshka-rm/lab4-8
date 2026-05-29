@@ -20,4 +20,6 @@ public class ChildBenefit extends TaxBenefit {
         return active && childCount > 0 && amount > 0;
     }
 
+    public int getChildCount() { return childCount; }
+    public void setChildCount(int childCount) { this.childCount = childCount; }
 }

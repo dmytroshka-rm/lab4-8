@@ -7,7 +7,9 @@ import taxsystem.ui.Menu;
 import taxsystem.ui.command.*;
 import taxsystem.service.TaxCalculatorService;
 import taxsystem.service.TaxReportGenerator;
-import taxsystem.repository.FileDataRepository;
+import taxsystem.service.PersonService;
+import taxsystem.repository.DatabaseManager;
+import taxsystem.repository.SqliteDataRepository;
 import taxsystem.repository.DataRepository;
 
 public class Application {
@@ -17,7 +19,9 @@ public class Application {
     private Menu mainMenu;
     private TaxCalculatorService taxService;
     private TaxReportGenerator reportGenerator;
+    private PersonService personService;
     private DataRepository repository;
+    private DatabaseManager dbManager;
 
     public Application() {
         log.info("=== Запуск застосунку Tax System ===");
@@ -28,18 +32,20 @@ public class Application {
             log.info("Ініціалізація застосунку завершена успішно.");
         } catch (Exception e) {
             log.error("Критична помилка під час ініціалізації застосунку!", e);
-            throw e; // буде відправлено на email завдяки логеру
+            throw e;
         }
     }
 
     private void initializeServices() {
         log.info("Ініціалізація сервісів...");
 
-        this.repository = new FileDataRepository();
+        this.dbManager = new DatabaseManager("taxsystem.db");
+        this.repository = new SqliteDataRepository(dbManager);
         this.taxService = new TaxCalculatorService();
         this.reportGenerator = new TaxReportGenerator();
+        this.personService = new PersonService(repository);
 
-        log.debug("Сервіси створено: TaxCalculatorService, TaxReportGenerator, FileDataRepository");
+        log.debug("Сервіси створено: PersonService, TaxCalculatorService, TaxReportGenerator");
     }
 
     private void initializeMenu() {
@@ -47,32 +53,20 @@ public class Application {
 
         mainMenu = new Menu();
 
-        mainMenu.addCommand("add_income", new AddIncomeCommand(taxService));
-        mainMenu.addCommand("add_benefit", new AddBenefitCommand(taxService));
-        mainMenu.addCommand("calculate", new CalculateTaxesCommand(taxService));
-        mainMenu.addCommand("sort", new SortTaxesCommand(taxService));
-        mainMenu.addCommand("find", new FindTaxesCommand(taxService));
-        mainMenu.addCommand("create_person", new CreatePersonCommand(taxService));
-
-        ExportReportCommand export = new ExportReportCommand(reportGenerator, repository);
-        export.setTaxService(taxService);
-        mainMenu.addCommand("export", export);
-
+        mainMenu.addCommand("create_person", new CreatePersonCommand(personService));
+        mainMenu.addCommand("add_income", new AddIncomeCommand(personService, taxService));
+        mainMenu.addCommand("add_benefit", new AddBenefitCommand(personService));
+        mainMenu.addCommand("calculate", new CalculateTaxesCommand(personService, taxService));
+        mainMenu.addCommand("sort", new SortTaxesCommand(personService, taxService));
+        mainMenu.addCommand("find", new FindTaxesCommand(personService, taxService));
+        mainMenu.addCommand("export", new ExportReportCommand(personService, taxService, reportGenerator, repository));
         mainMenu.addCommand("report_mode", new SetReportModeCommand(reportGenerator));
 
-        log.info("Команди меню успішно зареєстровано. Усього команд: {}", 7);
+        log.info("Команди меню успішно зареєстровано. Усього команд: {}", 8);
     }
 
     public void start() {
         log.info("Запуск головного меню...");
-        /*
-        // === ТЕСТ КРИТИЧНОЇ ПОМИЛКИ ===
-        try {
-            throw new RuntimeException("ТЕСТОВА КРИТИЧНА ПОМИЛКА! Перевірка email логування.");
-        } catch (Exception ex) {
-            log.fatal("Виникла критична помилка у програмі!", ex);
-        }
-        */
 
         try {
             mainMenu.run();

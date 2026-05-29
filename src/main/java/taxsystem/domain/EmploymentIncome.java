@@ -1,7 +1,5 @@
 package taxsystem.domain;
 
-import taxsystem.service.TaxCalculatorService;
-
 public class EmploymentIncome extends IncomeSource {
     private String employerName;
     private boolean isMainJob;
@@ -13,12 +11,12 @@ public class EmploymentIncome extends IncomeSource {
     }
 
     @Override
-    public double calculateTax(TaxCalculatorService tcs) {
-        double nm = tcs.getNonTaxableMinimum();
-        double rate = tcs.getTaxRule("ОПЛАТА_ПРАЦІ");
-        double base = Math.max(0, amount - nm);
-        this.taxAmount = base * rate;
-        return taxAmount;
+    public String getIncomeType() {
+        return "ОПЛАТА_ПРАЦІ";
     }
 
+    public String getEmployerName() { return employerName; }
+    public void setEmployerName(String employerName) { this.employerName = employerName; }
+    public boolean isMainJob() { return isMainJob; }
+    public void setMainJob(boolean mainJob) { isMainJob = mainJob; }
 }

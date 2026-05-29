@@ -1,7 +1,5 @@
 package taxsystem.domain;
 
-import taxsystem.service.TaxCalculatorService;
-
 public class MaterialAid extends IncomeSource {
     private String aidType;
     private boolean isTaxable;
@@ -13,14 +11,12 @@ public class MaterialAid extends IncomeSource {
     }
 
     @Override
-    public double calculateTax(TaxCalculatorService matHelp) {
-        if (!isTaxable) {
-            this.taxAmount = 0.0;
-        } else {
-            double rate = matHelp.getTaxRule("МАТЕРІАЛЬНА_ДОПОМОГА");
-            this.taxAmount = amount * rate;
-        }
-        return taxAmount;
+    public String getIncomeType() {
+        return "МАТЕРІАЛЬНА_ДОПОМОГА";
     }
 
+    public String getAidType() { return aidType; }
+    public void setAidType(String aidType) { this.aidType = aidType; }
+    public boolean isTaxable() { return isTaxable; }
+    public void setTaxable(boolean taxable) { isTaxable = taxable; }
 }

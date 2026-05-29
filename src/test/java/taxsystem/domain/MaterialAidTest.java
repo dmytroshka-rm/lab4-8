@@ -1,29 +1,36 @@
 package taxsystem.domain;
 
 import org.junit.jupiter.api.Test;
-import taxsystem.service.TaxCalculatorService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MaterialAidTest {
 
     @Test
-    void testNonTaxableAidHasZeroTax() {
-        TaxCalculatorService service = new TaxCalculatorService();
+    void testConstructorAndGetters() {
         MaterialAid aid = new MaterialAid("A1", 5000, "aid", "одноразова", false);
 
-        double tax = aid.calculateTax(service);
-
-        assertEquals(0.0, tax);
+        assertEquals("A1", aid.getSourceId());
+        assertEquals(5000, aid.getAmount());
+        assertEquals("aid", aid.getDescription());
+        assertEquals("одноразова", aid.getAidType());
+        assertFalse(aid.isTaxable());
     }
 
     @Test
-    void testTaxableAidUsesCorrectRate() {
-        TaxCalculatorService service = new TaxCalculatorService();
+    void testGetIncomeType() {
         MaterialAid aid = new MaterialAid("A1", 5000, "aid", "одноразова", true);
+        assertEquals("МАТЕРІАЛЬНА_ДОПОМОГА", aid.getIncomeType());
+    }
 
-        double tax = aid.calculateTax(service);
+    @Test
+    void testSetters() {
+        MaterialAid aid = new MaterialAid("A1", 5000, "aid", "одноразова", false);
 
-        assertEquals(5000 * service.getTaxRule("МАТЕРІАЛЬНА_ДОПОМОГА"), tax);
+        aid.setAidType("соціальна");
+        assertEquals("соціальна", aid.getAidType());
+
+        aid.setTaxable(true);
+        assertTrue(aid.isTaxable());
     }
 }

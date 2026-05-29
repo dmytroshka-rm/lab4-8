@@ -1,39 +1,46 @@
 package taxsystem.domain;
 
 import org.junit.jupiter.api.Test;
-import taxsystem.service.TaxCalculatorService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GiftIncomeTest {
 
     @Test
-    void testCloseRelative_NoTax() {
-        TaxCalculatorService service = new TaxCalculatorService();
+    void testCloseRelative() {
+        GiftIncome income = new GiftIncome("G1", 10000, "gift", "Mom", "мати");
+        assertTrue(income.isCloseRelative());
+    }
+
+    @Test
+    void testNonRelative() {
+        GiftIncome income = new GiftIncome("G1", 10000, "gift", "Friend", "друг");
+        assertFalse(income.isCloseRelative());
+    }
+
+    @Test
+    void testNullRelationship() {
+        GiftIncome income = new GiftIncome("G1", 10000, "gift", "Unknown", null);
+        assertFalse(income.isCloseRelative());
+    }
+
+    @Test
+    void testGetIncomeType() {
+        GiftIncome income = new GiftIncome("G1", 10000, "gift", "Mom", "мати");
+        assertEquals("ПОДАРУНОК", income.getIncomeType());
+    }
+
+    @Test
+    void testGettersAndSetters() {
         GiftIncome income = new GiftIncome("G1", 10000, "gift", "Mom", "мати");
 
-        double tax = income.calculateTax(service);
+        assertEquals("Mom", income.getDonorName());
+        assertEquals("мати", income.getRelationship());
 
-        assertEquals(0.0, tax);
-    }
-
-    @Test
-    void testNonRelative_TaxApplied() {
-        TaxCalculatorService service = new TaxCalculatorService();
-        GiftIncome income = new GiftIncome("G1", 10000, "gift", "Friend", "друг");
-
-        double tax = income.calculateTax(service);
-
-        assertEquals(10000 * service.getTaxRule("ПОДАРУНОК"), tax);
-    }
-
-    @Test
-    void testNullRelationship_TreatedAsNonRelative() {
-        TaxCalculatorService service = new TaxCalculatorService();
-        GiftIncome income = new GiftIncome("G1", 10000, "gift", "Unknown", null);
-
-        double tax = income.calculateTax(service);
-
-        assertEquals(10000 * service.getTaxRule("ПОДАРУНОК"), tax);
+        income.setDonorName("Dad");
+        income.setRelationship("батько");
+        assertEquals("Dad", income.getDonorName());
+        assertEquals("батько", income.getRelationship());
+        assertTrue(income.isCloseRelative());
     }
 }
